@@ -9,12 +9,9 @@
 #define GRID_SIZE GRID_WIDTH * GRID_HEIGHT
 
 
-static int grid[GRID_SIZE] = {0};
-
-
-int readfile(const char *filename);
-void print_grid();
-int solve(int index);
+int readfile(const char *filename, int *grid);
+void print_grid(const int *grid);
+int solve(int *grid, int index);
 
 
 int main(int argc, char *argv[]) {
@@ -22,12 +19,14 @@ int main(int argc, char *argv[]) {
         return -1;
     }
 
-    if (readfile(argv[1]) != 0) {
+    int grid[GRID_SIZE] = {0};
+
+    if (readfile(argv[1], grid) != 0) {
         return -1;
     }
 
-    if (!solve(0)) {
-        print_grid();
+    if (!solve(grid, 0)) {
+        print_grid(grid);
     } else {
         printf("No result\n");
     }
@@ -56,13 +55,13 @@ int find(const int *arr, size_t size, int target) {
 /*
  * Get the row and column without fail
  * */
-void get_row(int *dest_row, int y) {
+void get_row(const int *grid, int *dest_row, int y) {
     for (int x = 0; x < GRID_WIDTH; x++) {
         dest_row[x] = grid[x + y * GRID_WIDTH];
     }
 }
 
-void get_column(int *dest_col, int x) {
+void get_column(const int *grid, int *dest_col, int x) {
     for (int y = 0; y < GRID_HEIGHT; y++) {
         dest_col[y] = grid[x + y * GRID_WIDTH];
     }
@@ -71,7 +70,7 @@ void get_column(int *dest_col, int x) {
 /*
  * Get the group the number is in
  * */
-void get_group(int *group, int index) {
+void get_group(const int *grid, int *group, int index) {
     int x = index % GRID_WIDTH;
     int y = (index - x) / GRID_WIDTH;
 
@@ -89,24 +88,24 @@ void get_group(int *group, int index) {
 /*
  * Check for intersections in the row, column and within its group
  * */
-int check_intersections(int index, int target) {
+int check_intersections(const int *grid, int index, int target) {
     int x = index % GRID_WIDTH;
     int y = (index - x) / GRID_WIDTH;
 
     int row[GRID_WIDTH];
-    get_row(row, y);
+    get_row(grid, row, y);
     if (find(row, GRID_WIDTH, target) != -1) {
         return 1;
     }
 
     int col[GRID_HEIGHT];
-    get_column(col, x);
+    get_column(grid, col, x);
     if (find(col, GRID_HEIGHT, target) != -1) {
         return 1;
     }
 
     int flat_group[GROUP_SIZE];
-    get_group(flat_group, index);
+    get_group(grid, flat_group, index);
     if (find(flat_group, GROUP_SIZE, target) != -1) {
         return 1;
     }
@@ -116,7 +115,7 @@ int check_intersections(int index, int target) {
 /*
  * Read the file and fill the grid. Returns -1 if character is not a number and ignores newlines and spaces.
  * */
-int readfile(const char *filename) {
+int readfile(const char *filename, int *grid) {
     FILE *file_ptr = fopen(filename, "r");
 
     if (file_ptr == NULL) {
@@ -144,21 +143,21 @@ int readfile(const char *filename) {
 /*
  * Print the grid
  * */
-void print_grid() {
+void print_grid(const int *grid) {
     for (int i = 0; i < GRID_SIZE; i++) {
         printf("%d", grid[i]);
 
         int x = i % GRID_WIDTH;
         if (x == GRID_WIDTH - 1) {
             if ((i - x) / GRID_WIDTH % GROUP_HEIGHT == GROUP_HEIGHT - 1) {
-                printf("\n");
+                putchar('\n');
             }
-            printf("\n");
+            putchar('\n');
         } else {
             if (x % GROUP_WIDTH == GROUP_WIDTH - 1) {
-                printf(" ");
+                putchar(' ');
             }
-            printf(" ");
+            putchar(' ');
         }
     }
 }
@@ -169,22 +168,22 @@ void print_grid() {
  * If it leads to an error, backtrack and try different numbers
  * If no error is found till the end, the sudoku is solved
  * */
-int solve(int index) {
+int solve(int *grid, int index) {
     if (index == GRID_SIZE) {
         return 0;
     }
 
     // Skip if the cell already has a value
     if (grid[index] > 0) {
-        return solve(index + 1);
+        return solve(grid, index + 1);
     }
 
     // Try different values
     for (int n = 1; n < GROUP_SIZE + 1; n++) {
-        if (!check_intersections(index, n)) {
+        if (!check_intersections(grid, index, n)) {
             grid[index] = n;
 
-            if (!solve(index + 1)) {
+            if (!solve(grid, index + 1)) {
                 return 0;
             }
         }
