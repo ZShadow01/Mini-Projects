@@ -1,0 +1,94 @@
+import sys
+
+MEMORY_SIZE = 30000
+
+def error(message: str):
+    sys.stderr.write(message + "\n")
+
+def run(code: str):
+    # Declare necessary variables
+    memory = [0] * MEMORY_SIZE
+    pointer = 0
+    index = 0
+
+    # Go through each character until it reaches the end
+    while index < len(code):
+        if code[index] == '+':
+            memory[pointer] += 1
+        elif code[index] == '-':
+            if 0 < memory[pointer]:
+                memory[pointer] -= 1
+            else:
+                error("Value below 0 is not allowed")
+                return -1
+        elif code[index] == '>':
+            if (pointer < MEMORY_SIZE - 1):
+                pointer += 1
+            else:
+                error("Pointer reached maximum")
+                return -1
+        elif code[index] == '<':
+            if (0 < pointer):
+                pointer -= 1
+            else:
+                error("Pointer reached minimum")
+                return -1
+        elif code[index] == ',':
+            in_ = input()
+            memory[pointer] = in_ if len(in_) <= 1 else in_[0]
+        elif code[index] == '.':
+            print(chr(memory[pointer]), end='')
+        elif code[index] == '[':
+            # If value is 0, skip the loop
+            if memory[pointer] == 0:
+                brackets = 0
+                while True:
+                    index += 1
+                    if index >= len(code):
+                        error("Syntax error: missing closing bracket")
+                        return -1
+                    elif code[index] == '[':
+                        brackets += 1
+                    elif code[index] == ']':
+                        if brackets > 0:
+                            brackets -= 1
+                        else:
+                            break
+        elif code[index] == ']':
+            # If value is not 0, go back to the beginning of the loop
+            if memory[pointer] > 0:
+                brackets = 0
+                while True:
+                    index -= 1
+                    if 0 >= index:
+                        error("Syntax error: missing opening bracket")
+                        return -1
+                    elif code[index] == ']':
+                        brackets += 1
+                    elif code[index] == '[':
+                        if brackets > 0:
+                            brackets -= 1
+                        else:
+                            break
+        index += 1
+
+
+def main():
+    # File argument is the target .bf file
+    if len(sys.argv) < 2:
+        error("Missing argument: target file")
+        return -1
+    elif not sys.argv[1].endswith(".bf"):
+        error("Incorrect file type: file type has to be .bf")
+        return -1
+
+    # Open file and read content
+    with open(sys.argv[1], "r") as f:
+        code = f.read()
+        
+    # Run the file
+    return run(code)
+
+
+if __name__ == '__main__':
+    exit(main())

@@ -3,16 +3,22 @@
 
 #define MEMORY_SIZE 30000
 
-int run(unsigned char *memory, unsigned int *pointer, const char *code);
+int run(const char *code);
+void error(const char *message) {
+    fputs(message, stderr);
+}
 
 int main(int argc, char *argv[]) {
+    // File argument is the target .bf file
     if (argc < 2) {
-        fputs("Missing argument: target file\n", stderr);
+        error("Missing argument: target file\n");
+        return -1;
+    } 
+    // Check file type -> return error if file name does not end with .bf
+    else if (strcmp(argv[1] + strlen(argv[1]) - 3, ".bf") != 0) {
+        error("Incorrect file type: file type has to be .bf\n");
         return -1;
     }
-
-    unsigned char memory[MEMORY_SIZE];
-    unsigned int pointer = 0;
 
     int file_size;
     FILE *file_ptr = fopen(argv[1], "r");
@@ -36,77 +42,88 @@ int main(int argc, char *argv[]) {
     fclose(file_ptr);
 
     // Run the file
-    return run(memory, &pointer, code);
+    return run(code);
 }
 
-int run(unsigned char *memory, unsigned int *pointer, const char *code) {
+int run(const char *code) {
+    // Declare necessary variables
+    unsigned char memory[MEMORY_SIZE];
+    unsigned int pointer = 0;
+    const char *start_ptr = code;
+
     // Go through each character until it reaches the null terminator / the end
     while (*code != '\0') {
         // Check character
         switch (*code) {
             case '+':
-                memory[*pointer]++;
+                memory[pointer]++;
                 break;
             case '-':
-                if (0 < memory[*pointer]) {
-                    memory[*pointer]--;
+                if (0 < memory[pointer]) {
+                    memory[pointer]--;
                 } else {
-                    fputs("Value below 0 is not allowed\n", stderr);
+                    error("Value below 0 is not allowed\n");
                     return -1;
                 }
                 break;
             case '>':
-                if (*pointer < MEMORY_SIZE - 1) {
-                    (*pointer)++;
+                if (pointer < MEMORY_SIZE - 1) {
+                    pointer++;
                 } else {
-                    fputs("Pointer reached maximum\n", stderr);
+                    error("Pointer reached maximum\n");
                     return -1;
                 }
                 break;
             case '<':
-                if (0 < *pointer) {
-                    (*pointer)--;
+                if (0 < pointer) {
+                    pointer--;
                 } else {
-                    fputs("Pointer reached minimum\n", stderr);
+                    error("Pointer reached minimum\n");
                     return -1;
                 }
                 break;
             case ',':
-                memory[*pointer] = getchar();
+                memory[pointer] = getchar();
                 break;
             case '.':
-                putchar(memory[*pointer]);
+                putchar(memory[pointer]);
                 break;
             case '[':
                 // If value is 0, skip the loop
-                if (memory[*pointer] == 0) {
+                if (memory[pointer] == 0) {
                     int brackets = 0;
                     while (1) {
                         code++;
-                        if (*code == '[') {
+                        if (*code == '\0') {
+                            error("Syntax error: missing closing bracket");
+                            return -1;
+                        }
+                        else if (*code == '[') {
                             brackets++;
-                        } else if (*code == ']') {
+                        }
+                        else if (*code == ']') {
                             if (brackets > 0) {
                                 brackets--;
                             } else {
                                 break;
                             }
-                        } else if (*code == '\0') {
-                            fputs("Syntax error, missing closing bracket\n", stderr);
-                            return -1;
                         }
                     }
                 }
                 break;
             case ']':
                 // If value is not 0, go back to the beginning of the loop
-                if (memory[*pointer] > 0) {
+                if (memory[pointer] > 0) {
                     int brackets = 0;
                     while (1) {
                         code--;
-                        if (*code == ']') {
+                        if (code == start_ptr) {
+                            error("Syntax error: missing opening bracket");
+                        }
+                        else if (*code == ']') {
                             brackets++;
-                        } else if (*code == '[') {
+                        }
+                        else if (*code == '[') {
                             if (brackets > 0) {
                                 brackets--;
                             } else {
