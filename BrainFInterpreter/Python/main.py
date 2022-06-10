@@ -71,6 +71,7 @@ def run(code: str):
                         else:
                             break
         index += 1
+    return 0
 
 
 def main():
