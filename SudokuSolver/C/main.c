@@ -9,6 +9,9 @@
 #define GRID_SIZE GRID_WIDTH * GRID_HEIGHT
 
 
+void error(const char *message) {
+    fputs(message, stderr);
+}
 int readfile(const char *filename, int *grid);
 void print_grid(const int *grid);
 int solve(int *grid, int index);
@@ -58,7 +61,6 @@ void get_row(const int *grid, int *dest_row, int y) {
     /*
      * Get the row without fail
      * */
-
     for (int x = 0; x < GRID_WIDTH; x++) {
         dest_row[x] = grid[x + y * GRID_WIDTH];
     }
@@ -68,7 +70,6 @@ void get_column(const int *grid, int *dest_col, int x) {
     /*
      * Get the column without fail
      * */
-
     for (int y = 0; y < GRID_HEIGHT; y++) {
         dest_col[y] = grid[x + y * GRID_WIDTH];
     }
@@ -95,7 +96,6 @@ int check_intersections(const int *grid, int index, int target) {
     /*
      * Check for intersections in the row, column and within its group
      * */
-
     int x = index % GRID_WIDTH;
     int y = (index - x) / GRID_WIDTH;
 
@@ -123,23 +123,22 @@ int readfile(const char *filename, int *grid) {
     /*
      * Read the file and fill the grid. Returns -1 if character is not a number and ignores newlines and spaces.
      * */
-
     FILE *file_ptr = fopen(filename, "r");
 
     if (file_ptr == NULL) {
+        fprintf(stderr, "Failed to open %s\n", filename);
         return -1;
     }
 
     int ch;
     int i = 0;
     while ((ch = fgetc(file_ptr)) != EOF) {
-        if ((char) ch == '\n' || ch == ' ') {
-            continue;
-        }
-
-        if (is_number((char) ch)) {
-            grid[i++] = ch - 48;
+        // Ignore any character that is not a number
+        if (is_number((char) ch) && i < GRID_SIZE) {
+            grid[i++] = ch - 48;  // Convert char number to int (ASCII value)
         } else {
+            fclose(file_ptr);
+            error("Invalid sudoku format: Too many given numbers\n");
             return -1;
         }
     }
