@@ -34,15 +34,18 @@ int main(int argc, char *argv[]) {
     return 0;
 }
 
-/*
- * Has no impact on the algorithm itself.
- * */
 int is_number(char ch) {
+    /*
+    * Check if given character is a number
+    * */
     return ch == '0' || ch == '1' || ch == '2' || ch == '3' || ch == '4' || ch == '5' || ch == '6' || ch == '7' ||
         ch == '8' || ch == '9';
 }
 
 int find(const int *arr, size_t size, int target) {
+    /*
+    * Find the target integer in the given array and return the index (linear search)
+    * */
     for (int i = 0; i < size; i++) {
         if (arr[i] == target) {
             return i;
@@ -147,9 +150,8 @@ int readfile(const char *filename, int *grid) {
 
 void print_grid(const int *grid) {
     /*
-     * Print the grid
+     * Print the grid appropriately
      * */
-
     for (int i = 0; i < GRID_SIZE; i++) {
         printf("%d", grid[i]);
 
@@ -175,7 +177,6 @@ int solve(int *grid, int index) {
      * If it leads to an error, backtrack and try different numbers
      * If no error is found till the end, the sudoku is solved
      * */
-
     if (index == GRID_SIZE) {
         return 0;
     }
