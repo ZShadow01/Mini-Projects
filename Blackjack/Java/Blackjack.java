@@ -102,6 +102,24 @@ public class Blackjack {
         System.out.println("Player: " + this.player.toString() + " -> " + playerScore);
         System.out.println("Dealer: " + this.dealer.toString() + " -> " + dealerScore);
 
-        
+        // Dealing the scoring
+        if (playerScore == Blackjack.winningScore) {
+            System.out.println("You got a Blackjack, you win");
+        }
+        else if (dealerScore == Blackjack.winningScore) {
+            System.out.println("Dealer got a Blackjack, you lose"); 
+        }
+        else if (playerScore > Blackjack.winningScore) {
+            System.out.println("Yuo busted, you lose");
+        }
+        else if (dealerScore > Blackjack.winningScore) {
+            System.out.println("Dealer busted, you win");
+        }
+        else if (playerScore < dealerScore) {
+            System.out.println("Dealer has a higher score than you, you lose");
+        }
+        else if (dealerScore < playerScore) {
+            System.out.println("You have a higher score than the dealer, you win");
+        }
     }
 }
