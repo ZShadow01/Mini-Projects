@@ -49,8 +49,7 @@ def run_player(current_stack: list, player_hand: list) -> int:
     score = get_hand_value(player_hand)
     while score < WINNING_SCORE:
         print("Player's turn")
-        print("Cards:", str_hand(player_hand))
-        print("Current score:", score)
+        print("Cards:", str_hand(player_hand), "->", score)
 
         user_input = input('HIT or STAND: ').upper()
         if user_input == 'HIT':
@@ -94,22 +93,18 @@ def main():
     print("Dealer:", str_hand(current_dealer_hand), "->", str(dealer_score))
 
     # Dealing the scores
-    if player_score > WINNING_SCORE:
-        print("BUSTED")
-        return
-    
-    if dealer_score > WINNING_SCORE:
-        print("Dealer BUSTED")
-        return
-
-    # Check which score is closer to 21
-    p_dist, d_dist = abs(WINNING_SCORE - player_score), abs(WINNING_SCORE - dealer_score)
-    if p_dist < d_dist:
-        print("You WIN")
-    elif p_dist > d_dist:
-        print("You LOSE")
-    else:
-        print("DRAW")
+    if player_score == WINNING_SCORE:
+        print("You got a Blackjack, you win")
+    elif dealer_score == WINNING_SCORE:
+        print("Dealer got a Blackjack, you lose")
+    elif player_score > WINNING_SCORE:
+        print("You busted, you lose")
+    elif dealer_score > WINNING_SCORE:
+        print("Dealer busted, you win")
+    elif player_score < dealer_score:
+        print("Dealer has a higher score than you, you lose")
+    elif dealer_score < player_score:
+        print("You have a higher score than the dealer, you win")
 
 
 if __name__ == '__main__':
