@@ -88,10 +88,10 @@ def main():
 
     # Start the game
     player_score = run_player(current_stack, current_player_hand)
-    print("Player:", str_hand(current_player_hand), "-> " + str(player_score))
-
     dealer_score = run_dealer(current_stack, current_dealer_hand)
-    print("Dealer:", str_hand(current_dealer_hand), "-> " + str(dealer_score))
+    
+    print("Player:", str_hand(current_player_hand), "->", str(player_score))
+    print("Dealer:", str_hand(current_dealer_hand), "->", str(dealer_score))
 
     # Dealing the scores
     if player_score > WINNING_SCORE:
