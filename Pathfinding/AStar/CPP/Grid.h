@@ -17,6 +17,8 @@ public:
     void set(int x, int y, Node node);
     void set(const Vector &pos, Node node);
 
+    bool in(const Vector &pos);
+
     int getWidth() const;
     int getHeight() const;
     int getSize() const;

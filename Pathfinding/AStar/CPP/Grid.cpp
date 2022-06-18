@@ -35,6 +35,11 @@ void Grid::set(const Vector &pos, Node node) {
 }
 
 
+bool Grid::in(const Vector &pos) {
+    return 0 <= pos.x && 0 <= pos.y && pos.x < this->width_ && pos.y < this->height_; 
+}
+
+
 int Grid::getWidth() const {
     return this->width_;
 }

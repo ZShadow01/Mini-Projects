@@ -1,5 +1,12 @@
+/*
+1. No dynamic memory allocation
+2. 
+*/
+
+
 #include <iostream>
 #include <deque>
+#include <vector>
 #include <algorithm>
 #include <array>
 #include <cmath>
@@ -7,25 +14,30 @@
 #include "Grid.h"
 
 
-void aStarPathfinding(Grid grid, const Vector &start, const Vector &end);
+std::deque<Vector> aStarPathfinding(Grid grid, const Vector &start, const Vector &end);
 
 
 int main() {
     Grid grid(10, 10);
-    aStarPathfinding(grid, {0, 0}, {9, 9});
+    std::deque<Vector> path = aStarPathfinding(grid, {0, 0}, {9, 9});
+    if (path.empty()) {
+        std::cout << "No path found\n";
+    }
+    else {
+        std::cout << "Path found\n";
+    }
     return 0;
 }
 
 
-void aStarPathfinding(Grid grid, const Vector &start, const Vector &end) {
+std::deque<Vector> aStarPathfinding(Grid grid, const Vector &start, const Vector &end) {
+    std::deque<Vector> path;
     std::deque<Node> openList;
     std::deque<Node> closedList;
 
     openList.emplace_back(start.x, start.y);
 
-    int iteration = 0;
     while (!openList.empty()) {
-        std::cout << iteration++ << '\n';
         std::sort(openList.begin(), openList.end(), [grid] (const Node &v1, const Node &v2) {
             return v1.getTotalCost() < v2.getTotalCost();
         });
@@ -35,8 +47,12 @@ void aStarPathfinding(Grid grid, const Vector &start, const Vector &end) {
         closedList.push_back(currentNode);
 
         if (currentNode.pos == end) {
-            std::cout << "Found a path\n";
-            return;
+            Vector current = currentNode.pos;
+            while (grid.in(current)) {
+                path.push_front(current);
+                current = grid.get(current).getParentVector();
+            }
+            return path;
         }
 
         std::array<Vector, 8> neighbours{{
@@ -50,7 +66,7 @@ void aStarPathfinding(Grid grid, const Vector &start, const Vector &end) {
                 continue;
             }
 
-            Node newNode(pos.x, pos.y);
+            Node newNode(pos, currentNode.pos);
             
             if (std::find(closedList.begin(), closedList.end(), newNode) != closedList.end()) {
                 continue;
@@ -68,5 +84,5 @@ void aStarPathfinding(Grid grid, const Vector &start, const Vector &end) {
         }
     }
 
-    std::cout << "No path found\n";
+    return path;
 }
