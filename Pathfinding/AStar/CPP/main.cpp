@@ -1,12 +1,9 @@
-#include <iostream>
-#include <fstream>
-#include <sstream>
-#include <vector>
+/*
+A* Algorithm
+Find the shortest path from a given map and write result to file
+*/
 
 #include "Grid.h"
-
-constexpr char BLOCK = '#';
-constexpr char SPACE = '.';
 
 int main(int argc, char *argv[]) {
     if (argc < 4) {
