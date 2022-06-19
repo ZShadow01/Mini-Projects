@@ -1,3 +1,7 @@
+"""
+Blackjack Python implementation without Object-Oriented Programming.
+"""
+
 import random
 
 
