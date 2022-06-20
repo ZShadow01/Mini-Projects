@@ -1,47 +1,21 @@
-from math import inf
+import sys
+from astar import Grid
 
-
-class Node:
-    def __init__(self, pos: tuple, parent):
-        self.pos = pos
-        self.parent = parent
-        self.f = inf
-        self.g = 0
-        self.h = 0
-
-
-def readfile(filename: str):
-    with open(filename, 'r') as f:
-        return f.read()
-
-
-def find_path(start: tuple, end: tuple):
-    start_node = Node(start, None)
-
-    open_list = [start_node]
-    closed_list = []
-
-    while len(open_list) > 0:
-        open_list = sorted(open_list, key=lambda k: k.f)
-
-        current_node = open_list.pop(0)
-        closed_list.append(current_node)
-
-        if current_node.pos == end:
-            return
-
-        neighbours = [
-            (current_node.pos[0] + 1, current_node.pos[1]), (current_node.pos[0] - 1, current_node.pos[1]),
-            (current_node.pos[0], current_node.pos[1] + 1), (current_node.pos[0], current_node.pos[1] - 1),
-            (current_node.pos[0] + 1, current_node.pos[1] + 1), (current_node.pos[0] + 1, current_node.pos[1] - 1),
-            (current_node.pos[0] - 1, current_node.pos[1] + 1), (current_node.pos[0] - 1, current_node.pos[1] - 1)
-        ]
-        for pos in neighbours:
-            pass
-    
 
 def main():
-    find_path((0, 0), (9, 9))
+    if len(sys.argv) < 4:
+        return
+
+    try:
+        start = tuple(map(int, sys.argv[1].split(',')))
+        end = tuple(map(int, sys.argv[2].split(',')))
+    except ValueError:
+        return
+
+    file_name = sys.argv[3]
+    grid = Grid()
+    grid.readfile(file_name)
+    grid.find_and_save_path('path-result.txt', start, end)
 
 
 if __name__ == '__main__':
