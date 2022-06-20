@@ -28,3 +28,19 @@ On success, the program will create a text file "path-result.txt" in which the m
 
 #### Map format
 The map has to be correctly formatted for the program to work.
+
+Example map:
+```
+. . . . . . . . . .
+. . . . . . . . . .
+. . . . . . . . . .
+. . . . . . . . . .
+. . . . . . . . . .
+# # # # # # # # # .
+. . . . . . . . . .
+. . . . . . . . . .
+. . . . . . . . . .
+. . . . . . . . . .
+```
+
+If the widths are not consistent (equal), the program will fail. Furthermore, the map has to consist of only `.` and `#` which represent an empty space and a blocked, impassable space.
