@@ -78,7 +78,8 @@ int run(const char *code) {
             case '>':
                 if (pointer < MEMORY_SIZE - 1) {
                     pointer++;
-                } else {
+                }
+                else {
                     error("Pointer reached maximum\n");
                     return -1;
                 }
@@ -86,7 +87,8 @@ int run(const char *code) {
             case '<':
                 if (0 < pointer) {
                     pointer--;
-                } else {
+                }
+                else {
                     error("Pointer reached minimum\n");
                     return -1;
                 }
