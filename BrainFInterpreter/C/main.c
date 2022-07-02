@@ -104,7 +104,7 @@ int run(const char *code) {
                 if (memory[pointer] == 0) {
                     const char *loop_end = skip_loop(code);
                     if (loop_end == NULL) {
-                        error("Syntax error: missing closing bracket");
+                        error("Syntax error: missing closing bracket\n");
                         return -1;
                     }
                 code = loop_end;
@@ -115,7 +115,7 @@ int run(const char *code) {
                 if (memory[pointer] > 0) {
                     const char *loop_start = restart_loop(code, start_ptr);
                     if (loop_start == NULL) {
-                        error("Syntax error: missing opening bracket");
+                        error("Syntax error: missing opening bracket\n");
                         return -1;
                     }
                     code = loop_start;
