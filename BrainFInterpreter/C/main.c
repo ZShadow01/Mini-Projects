@@ -7,6 +7,9 @@ int run(const char *code);
 void error(const char *message) {
     fputs(message, stderr);
 }
+const char *skip_loop(const char *code_ptr);
+const char *restart_loop(const char *code_ptr, const char *start_ptr);
+
 
 int main(int argc, char *argv[]) {
     // File argument is the target .bf file
@@ -49,6 +52,7 @@ int main(int argc, char *argv[]) {
     // Run the file
     return run(code);
 }
+
 
 int run(const char *code) {
     // Declare necessary variables
@@ -96,46 +100,23 @@ int run(const char *code) {
             case '[':
                 // If value is 0, skip the loop
                 if (memory[pointer] == 0) {
-                    int brackets = 0;
-                    while (1) {
-                        code++;
-                        if (*code == '\0') {
-                            error("Syntax error: missing closing bracket");
-                            return -1;
-                        }
-                        else if (*code == '[') {
-                            brackets++;
-                        }
-                        else if (*code == ']') {
-                            if (brackets > 0) {
-                                brackets--;
-                            } else {
-                                break;
-                            }
-                        }
+                    const char *loop_end = skip_loop(code);
+                    if (loop_end == NULL) {
+                        error("Syntax error: missing closing bracket");
+                        return -1;
                     }
+                code = loop_end;
                 }
                 break;
             case ']':
                 // If value is not 0, go back to the beginning of the loop
                 if (memory[pointer] > 0) {
-                    int brackets = 0;
-                    while (1) {
-                        code--;
-                        if (code == start_ptr) {
-                            error("Syntax error: missing opening bracket");
-                        }
-                        else if (*code == ']') {
-                            brackets++;
-                        }
-                        else if (*code == '[') {
-                            if (brackets > 0) {
-                                brackets--;
-                            } else {
-                                break;
-                            }
-                        }
+                    const char *loop_start = restart_loop(code, start_ptr);
+                    if (loop_start == NULL) {
+                        error("Syntax error: missing opening bracket");
+                        return -1;
                     }
+                    code = loop_start;
                 }
                 break;
             default:
@@ -144,4 +125,55 @@ int run(const char *code) {
         code++;
     }
     return 0;
+}
+
+
+const char *skip_loop(const char *code_ptr) {
+    // Skip the loop and ignore the loops within the loop
+    int brackets = 0;
+    while (1) {
+        code_ptr++;
+        // Reached the end without an end bracket -> error
+        if (*code_ptr == '\0') {
+            return NULL;
+        }
+        // Add to brackets to ignore
+        else if (*code_ptr == '[') {
+            brackets++;
+        }
+        else if (*code_ptr == ']') {
+            // Ignore the closing brackets and break if there are no brackets to ignore
+            if (brackets > 0) {
+                brackets--;
+            }
+            else {
+                break;
+            }
+        }
+    }
+    return code_ptr;
+}
+
+
+const char *restart_loop(const char *code_ptr, const char *start_ptr) {
+    // Go back to corresponding opening bracket and ignore the loops within the loop
+    int brackets = 0;
+    while (1) {
+        code_ptr--;
+        // Reached the beginning without an opening bracket -> error
+        if (code_ptr == start_ptr && *code_ptr != ']') {
+            return NULL;
+        }
+        else if (*code_ptr == ']') {
+            brackets++;
+        }
+        else if (*code_ptr == '[') {
+            if (brackets > 0) {
+                brackets--;
+            } else {
+                break;
+            }
+        }
+    }
+    return code_ptr;
 }
