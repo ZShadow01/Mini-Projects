@@ -113,7 +113,7 @@ public class Interpreter {
     }
 
     private int skipLoop(int index) {
-            // Skip the loop and ignore the loops within the loop
+        // Skip the loop and ignore the loops within the loop
         int brackets = 0;
         while (true) {
             index++;
@@ -139,7 +139,7 @@ public class Interpreter {
     }
 
     private int restartLoop(int index) {
-            // Go back to corresponding opening bracket and ignore the loops within the loop
+        // Go back to corresponding opening bracket and ignore the loops within the loop
         int brackets = 0;
         while (true) {
             index--;
