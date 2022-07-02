@@ -1,9 +1,54 @@
 import sys
 
+
 MEMORY_SIZE = 30000
+
 
 def error(message: str):
     sys.stderr.write(message + "\n")
+
+
+def skip_loop(code, index):
+    # Skip the loop and ignore the loops within the loop
+    brackets = 0
+    while True:
+        index += 1;
+        # Reached the end without an end bracket -> error
+        if index >= len(code):
+            return -1
+
+        # Add to brackets to ignore
+        elif code[index] == '[':
+            brackets += 1
+
+        elif code[index] == ']':
+            # Ignore the closing brackets and break if there are no brackets to ignore
+            if (brackets > 0):
+                brackets -= 1
+            else:
+                break
+    return index
+
+
+def restart_loop(code, index):
+    # Go back to corresponding opening bracket and ignore the loops within the loop
+    brackets = 0
+    while True:
+        index -= 1
+        # Reached the beginning without an opening bracket -> error
+        if index < 0:
+            return -1
+
+        elif code[index] == ']':
+            brackets += 1
+
+        elif code[index] == '[':
+            if brackets > 0:
+                brackets -= 1
+            else:
+                break
+    return index
+
 
 def run(code: str):
     # Declare necessary variables
@@ -41,35 +86,20 @@ def run(code: str):
         elif code[index] == '[':
             # If value is 0, skip the loop
             if memory[pointer] == 0:
-                brackets = 0
-                while True:
-                    index += 1
-                    if index >= len(code):
-                        error("Syntax error: missing closing bracket")
-                        return -1
-                    elif code[index] == '[':
-                        brackets += 1
-                    elif code[index] == ']':
-                        if brackets > 0:
-                            brackets -= 1
-                        else:
-                            break
+                loop_start = skip_loop(code, index)
+                if loop_start == -1:
+                    error("Syntax error: missing closing bracket")
+                    return -1
+                index = loop_start
+
         elif code[index] == ']':
             # If value is not 0, go back to the beginning of the loop
             if memory[pointer] > 0:
-                brackets = 0
-                while True:
-                    index -= 1
-                    if 0 >= index:
-                        error("Syntax error: missing opening bracket")
-                        return -1
-                    elif code[index] == ']':
-                        brackets += 1
-                    elif code[index] == '[':
-                        if brackets > 0:
-                            brackets -= 1
-                        else:
-                            break
+                loop_end = restart_loop(code, index)
+                if loop_end == -1:
+                    error("Syntax error: missing opening bracket")
+                    return -1
+                index = loop_end
         index += 1
     return 0
 
