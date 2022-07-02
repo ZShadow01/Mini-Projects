@@ -1,3 +1,7 @@
+/*
+ * BRAINF*CK INTERPRETER WITHOUT DYNAMIC MEMORY ALLOCATION
+ */
+
 #include <stdio.h>
 #include <string.h>
 
@@ -24,12 +28,7 @@ int main(int argc, char *argv[]) {
     }
 
     int file_size;
-    FILE *file_ptr;
-#ifdef _WIN32
-    fopen_s(&file_ptr, argv[1], "r");
-#else
-    file_ptr = fopen(argv[1], "r");
-#endif // _WIN32
+    FILE *file_ptr = fopen(argv[1], "r");
 
     if (file_ptr == NULL) {
         fprintf(stderr, "Failed to open %s\n", argv[1]);
