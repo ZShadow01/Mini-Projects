@@ -134,11 +134,15 @@ int readfile(const char *filename, int *grid) {
     int i = 0;
     while ((ch = fgetc(file_ptr)) != EOF) {
         // Ignore any character that is not a number
+        if ((char) ch == '\n') {
+            continue;
+        }
+
         if (is_number((char) ch) && i < GRID_SIZE) {
             grid[i++] = ch - 48;  // Convert char number to int (ASCII value)
         } else {
             fclose(file_ptr);
-            error("Invalid sudoku format: Too many given numbers\n");
+            error("Invalid sudoku format: Too many given numbers / characters\n");
             return -1;
         }
     }
